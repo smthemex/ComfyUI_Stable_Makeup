@@ -44,7 +44,7 @@ class SPIGAFramework:
         self.model.load_state_dict(model_state_dict)
         self.model = self.model.cuda(gpus[0])
         self.model.eval()
-        print('SPIGA model loaded!')
+        #print('SPIGA model loaded!')
 
         # Load 3D model and camera intrinsic matrix
         if load3DM:
