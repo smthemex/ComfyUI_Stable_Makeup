@@ -6,8 +6,6 @@ from .facelib import FaceDetector
 import cv2
 import os
 
-processor = SPIGAFramework(ModelConfig("300wpublic",load_model_url=None))
-
 def center_crop(image, size):
     width, height = image.size
     left = (width - size) // 2
@@ -42,7 +40,8 @@ def preprocess(example, name, path):
 # We could use `dlib`, but this should be faster.
 # Note that the `landmarks` are stored as strings.
 
-def get_landmarks(image, detector):
+def get_landmarks(image, detector,dataname):
+    processor = SPIGAFramework(ModelConfig(dataname, load_model_url=None))
     image = cv2.cvtColor(np.asarray(image), cv2.COLOR_RGB2BGR)
     faces, boxes, scores, landmarks = detector.detect_align(image)  # 一定要用align啊
     boxes = boxes.cpu().numpy()
@@ -86,8 +85,9 @@ def bbox_from_landmarks(landmarks_):
     return bbox
 
 
-def spiga_process(example, detector):
-    ldms = get_landmarks(example, detector)
+def spiga_process(example, detector,dataname):
+    processor = SPIGAFramework(ModelConfig(dataname, load_model_url=None))
+    ldms = get_landmarks(example, detector,dataname)
 
     if len(ldms) == 0:
         return False
@@ -179,4 +179,3 @@ def spiga_segmentation(spiga, size):
     landmarks = spiga
     spiga_seg = conditioning_from_landmarks(landmarks, size=size)
     return spiga_seg
-
