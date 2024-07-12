@@ -15,7 +15,6 @@ from .detail_encoder.encoder_plus import detail_encoder
 from .import spiga_draw
 from PIL import Image
 from .facelib import FaceDetector
-from safetensors.torch import load_file
 from comfy.utils import common_upscale
 import numpy as np
 import sys
@@ -28,8 +27,6 @@ weigths_current_path = os.path.join(folder_paths.models_dir, "stable_makeup")
 
 if not os.path.exists(weigths_current_path):
     os.makedirs(weigths_current_path)
-
-
 
 scheduler_list = ["DDIM",
     "Euler",
@@ -123,8 +120,6 @@ def nomarl_upscale(img_tensor, width, height):
     img_pil = tensor_to_pil(samples)
     return img_pil
 
-
-
 def get_local_path(comfy_file_path, model_path):
     path = os.path.join(comfy_file_path, "models", "diffusers", model_path)
     model_path = os.path.normpath(path)
@@ -158,7 +153,7 @@ class StableMakeup_LoadModel:
             "required": {
                 "diffuser_model": (paths,),
                 "repo":("STRING", {"default": "runwayml/stable-diffusion-v1-5"}),
-                "ckpts": (["none"]+folder_paths.get_filename_list("checkpoints"),),
+                "clip":("STRING", {"default": "openai/clip-vit-large-patch14"}),
                 "scheduler": (scheduler_list,),
             }
         }
@@ -168,20 +163,18 @@ class StableMakeup_LoadModel:
     FUNCTION = "main_loader"
     CATEGORY = "Stable_Makeup"
 
-    def main_loader(self,diffuser_model,repo,ckpts,scheduler):
+    def main_loader(self,diffuser_model,repo,clip,scheduler):
         scheduler_used = get_sheduler(scheduler)
-        ckpt = folder_paths.get_full_path("checkpoints", ckpts)
         model_id=instance_path(diffuser_model,repo)
         if model_id=="none":
             raise  "need fill in 'runwayml/stable-diffusion-v1-5' or choice sd1.5 diffuser model"
         makeup_encoder_path = os.path.join(weigths_current_path,"pytorch_model.bin")
         id_encoder_path = os.path.join(weigths_current_path,"pytorch_model_1.bin")
         pose_encoder_path = os.path.join(weigths_current_path,"pytorch_model_2.bin")
-        Unet = OriginalUNet2DConditionModel.from_pretrained(model_id,subfolder="unet",).to("cuda")
-        Unet.load_state_dict(load_file(ckpt, device="cuda"), strict=False, )
+        Unet = OriginalUNet2DConditionModel.from_pretrained(model_id, subfolder="unet", ).to("cuda")
         id_encoder = ControlNetModel.from_unet(Unet)
         pose_encoder = ControlNetModel.from_unet(Unet)
-        makeup_encoder = detail_encoder(Unet, "openai/clip-vit-large-patch14", "cuda", dtype=torch.float32)
+        makeup_encoder = detail_encoder(Unet, clip, "cuda", dtype=torch.float32)
         makeup_state_dict = torch.load(makeup_encoder_path)
         id_state_dict = torch.load(id_encoder_path)
         id_encoder.load_state_dict(id_state_dict, strict=False)
@@ -210,10 +203,12 @@ class StableMakeup_Sampler:
                 "pipe": ("MODEL",),
                 "makeup_encoder": ("MODEL",),
                 "facedetector": (["mobilenet","resnet"],),
+                "dataname": (["300wpublic", "300wprivate","merlrav","wflw"],),
                 "cfg": ("FLOAT", {"default": 1.6, "min": 0.0, "max": 30.0, "step": 0.1, "round": 0.01}),
                 "steps": ("INT", {"default": 30, "min": 1, "max": 10000}),
                 "width": ("INT", {"default": 512, "min": 256, "max": 768, "step": 64, "display": "number"}),
                 "height": ("INT", {"default": 512, "min": 256, "max": 768, "step": 64, "display": "number"}),
+                
                }
         }
     
@@ -223,8 +218,8 @@ class StableMakeup_Sampler:
     CATEGORY = "Stable_Makeup"
     
     
-    def makeup_main(self, id_image, makeup_image, pipe, makeup_encoder,cfg, steps,
-                      width, height,facedetector ):
+    def makeup_main(self, id_image, makeup_image, pipe, makeup_encoder,facedetector,dataname,cfg, steps,
+                      width, height ):
         
         if facedetector=="mobilenet":
             weight_path=os.path.join(weigths_current_path, "mobilenet0.25_Final.pth")
@@ -232,8 +227,8 @@ class StableMakeup_Sampler:
             weight_path=os.path.join(weigths_current_path, "resnet50.pth")
         detector = FaceDetector(name=facedetector,weight_path=weight_path)
         
-        def get_draw(pil_img, size):
-            spigas = spiga_draw.spiga_process(pil_img, detector)
+        def get_draw(pil_img, size,dataname):
+            spigas = spiga_draw.spiga_process(pil_img, detector,dataname)
             if spigas == False:
                 width, height = pil_img.size
                 black_image_pil = Image.new('RGB', (width, height), color=(0, 0, 0))
@@ -244,7 +239,7 @@ class StableMakeup_Sampler:
             
         id_image=nomarl_upscale(id_image, width, height)
         makeup_image = nomarl_upscale(makeup_image, width, height)
-        pose_image = get_draw(id_image, size=width)
+        pose_image = get_draw(id_image, size=width,dataname=dataname)
         result_img = makeup_encoder.generate(id_image=[id_image, pose_image], makeup_image=makeup_image,num_inference_steps=steps,
                                              pipe=pipe, guidance_scale=cfg)
         
