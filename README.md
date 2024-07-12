@@ -22,6 +22,15 @@ My ComfyUI node list：
 15、ComfyUI_AnyDoor node: [ComfyUI_AnyDoor](https://github.com/smthemex/ComfyUI_AnyDoor)  
 16、ComfyUI_Stable_Makeup node: [ComfyUI_Stable_Makeup](https://github.com/smthemex/ComfyUI_Stable_Makeup)  
 
+Update
+---
+---社区模型没有必要,之前添加是为了别的功能,目前无法实现,所以已经剔除;   
+---可以尝试不同的数据集,当然,意味着你要多下载几个SPIGA模型;  
+---修复没有预下载的模型时,无法加载的错误;  
+---fix bug ,The community model is not necessary  
+--- You can try different datasets, of course, which means you need to download a few more SPIGA models;  
+---Fix the error where models that were not downloaded in advance cannot be loaded;
+
 1.Installation
 -----
   In the ./ComfyUI /custom_node directory, run the following:   
@@ -42,8 +51,7 @@ If the module is missing, please open "no need requirements.txt" , pip install  
 模型的下载地址比较杂，所以使用前请下下载，并存放在ComfyUI/models/stable_makeup 文件夹下：   
 The download address for the model is quite miscellaneous, so please download it before use and store it in the ComfyUI/models/table_makeup folder:  
 
-
-3.1  spiga_300wpublic.pt  [link](https://huggingface.co/aprados/spiga/tree/main)   
+3.1  spiga_300wpublic.pt or other models  [link](https://huggingface.co/aprados/spiga/tree/main)   
 
 3.2  "pytorch_model.bin  & pytorch_model_1.bin  &  pytorch_model_2.bin"   [link](https://drive.google.com/drive/folders/1397t27GrUyLPnj17qVpKWGwg93EcaFfg)
 
@@ -54,7 +62,7 @@ The download address for the model is quite miscellaneous, so please download it
 3.4   sd1.5的标准模型只需要以下结构内的文件，你如果直接用内置的repo下载，都会缓存到c盘，大概3.97G。   
      runwayml/stable-diffusion-v1-5 ,need unet models and vae encoder, You can check the following list, which includes the model and file locations，all 3.97G.     
     
-3.5  clip模型，这个迟点看能否用comfyUI内置的，目前只设置了自动下载，注意联网。  
+3.5  clip模型，这个迟点看能否用comfyUI内置的，以及外置为输入格式,可以引导至本地其他路径。  
     "openai/clip-vit-large-patch14" clip models
 
 Models list    
@@ -97,17 +105,11 @@ Models list
 |                 ├── preprocessor_config.json
 |             ├──model_index.json
 ```
-社区模型   
-```
-├── ComfyUI/models/
-|     ├──checkpoints
-|         ├── any sd1.5 model  （任意sd1.5社区模型）
-```
 
 Example
 -----
  
- ![](https://github.com/smthemex/ComfyUI_Stable_Makeup/blob/main/example/example1.png)
+ ![](https://github.com/smthemex/ComfyUI_Stable_Makeup/blob/main/example/example.png)
 
 
 6 Citation
