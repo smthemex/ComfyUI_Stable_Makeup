@@ -29,7 +29,7 @@ weigths_current_path = os.path.join(folder_paths.models_dir, "stable_makeup")
 if not os.path.exists(weigths_current_path):
     os.makedirs(weigths_current_path)
 
-detector = FaceDetector(weight_path=os.path.join(weigths_current_path,"mobilenet0.25_Final.pth"))
+
 
 scheduler_list = ["DDIM",
     "Euler",
@@ -122,15 +122,8 @@ def nomarl_upscale(img_tensor, width, height):
     samples = img.movedim(1, -1)
     img_pil = tensor_to_pil(samples)
     return img_pil
-def get_draw(pil_img, size):
-    spigas = spiga_draw.spiga_process(pil_img, detector)
-    if spigas == False:
-        width, height = pil_img.size
-        black_image_pil = Image.new('RGB', (width, height), color=(0, 0, 0))
-        return black_image_pil
-    else:
-        spigas_faces = spiga_draw.spiga_segmentation(spigas, size=size)
-        return spigas_faces
+
+
 
 def get_local_path(comfy_file_path, model_path):
     path = os.path.join(comfy_file_path, "models", "diffusers", model_path)
@@ -180,7 +173,7 @@ class StableMakeup_LoadModel:
         ckpt = folder_paths.get_full_path("checkpoints", ckpts)
         model_id=instance_path(diffuser_model,repo)
         if model_id=="none":
-            raise  "need fill in 'runwayml/stable-diffusion-v1-5' or choice sd diffuser model"
+            raise  "need fill in 'runwayml/stable-diffusion-v1-5' or choice sd1.5 diffuser model"
         makeup_encoder_path = os.path.join(weigths_current_path,"pytorch_model.bin")
         id_encoder_path = os.path.join(weigths_current_path,"pytorch_model_1.bin")
         pose_encoder_path = os.path.join(weigths_current_path,"pytorch_model_2.bin")
@@ -216,6 +209,7 @@ class StableMakeup_Sampler:
                 "makeup_image": ("IMAGE",),
                 "pipe": ("MODEL",),
                 "makeup_encoder": ("MODEL",),
+                "facedetector": (["mobilenet","resnet"],),
                 "cfg": ("FLOAT", {"default": 1.6, "min": 0.0, "max": 30.0, "step": 0.1, "round": 0.01}),
                 "steps": ("INT", {"default": 30, "min": 1, "max": 10000}),
                 "width": ("INT", {"default": 512, "min": 256, "max": 768, "step": 64, "display": "number"}),
@@ -230,8 +224,24 @@ class StableMakeup_Sampler:
     
     
     def makeup_main(self, id_image, makeup_image, pipe, makeup_encoder,cfg, steps,
-                      width, height, ):
+                      width, height,facedetector ):
         
+        if facedetector=="mobilenet":
+            weight_path=os.path.join(weigths_current_path, "mobilenet0.25_Final.pth")
+        else:
+            weight_path=os.path.join(weigths_current_path, "resnet50.pth")
+        detector = FaceDetector(name=facedetector,weight_path=weight_path)
+        
+        def get_draw(pil_img, size):
+            spigas = spiga_draw.spiga_process(pil_img, detector)
+            if spigas == False:
+                width, height = pil_img.size
+                black_image_pil = Image.new('RGB', (width, height), color=(0, 0, 0))
+                return black_image_pil
+            else:
+                spigas_faces = spiga_draw.spiga_segmentation(spigas, size=size)
+                return spigas_faces
+            
         id_image=nomarl_upscale(id_image, width, height)
         makeup_image = nomarl_upscale(makeup_image, width, height)
         pose_image = get_draw(id_image, size=width)
