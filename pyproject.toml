@@ -1,0 +1,14 @@
+[project]
+name = "comfyui_stable_makeup"
+description = ""
+version = "1.0.0"
+license = "LICENSE"
+
+[project.urls]
+Repository = "https://github.com/smthemex/ComfyUI_Stable_Makeup"
+#  Used by Comfy Registry https://comfyregistry.org
+
+[tool.comfy]
+PublisherId = "smthemx"
+DisplayName = "ComfyUI_Stable_Makeup"
+Icon = ""
