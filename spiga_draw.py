@@ -6,26 +6,6 @@ from .facelib import FaceDetector
 import cv2
 import os
 
-scheduler_list = ["DDIM",
-    "Euler",
-    "Euler a",
-    "DDPM",
-    "DPM++ 2M",
-    "DPM++ 2M Karras",
-    "DPM++ 2M SDE",
-    "DPM++ 2M SDE Karras",
-    "DPM++ SDE",
-    "DPM++ SDE Karras",
-    "DPM2",
-    "DPM2 Karras",
-    "DPM2 a",
-    "DPM2 a Karras",
-    "Heun",
-    "LCM",
-    "LMS",
-    "LMS Karras",
-    "UniPC",
-]
 processor = SPIGAFramework(ModelConfig("300wpublic",load_model_url=None))
 
 def center_crop(image, size):
