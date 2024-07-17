@@ -114,7 +114,7 @@ Example
 
 6 Citation
 ------
-Stable-Makeup 没有标识license，请谨慎将此插件用于任何商业行为。  
+
 ``` python  
 @article{zhang2024stable,
   title={Stable-Makeup: When Real-World Makeup Transfer Meets Diffusion Model},
