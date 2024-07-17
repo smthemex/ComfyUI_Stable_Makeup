@@ -21,13 +21,13 @@ My ComfyUI node list：
 14、ComfyUI_MS_Diffusion node:[ComfyUI_MS_Diffusion](https://github.com/smthemex/ComfyUI_MS_Diffusion)   
 15、ComfyUI_AnyDoor node: [ComfyUI_AnyDoor](https://github.com/smthemex/ComfyUI_AnyDoor)  
 16、ComfyUI_Stable_Makeup node: [ComfyUI_Stable_Makeup](https://github.com/smthemex/ComfyUI_Stable_Makeup)  
+17、ComfyUI_EchoMimic node:  [ComfyUI_EchoMimic](https://github.com/smthemex/ComfyUI_EchoMimic)   
 
 Update
 ---
----社区模型没有必要,之前添加是为了别的功能,目前无法实现,所以已经剔除;   
+---剔除diffuser模型，改成单体的模型 “runwayml/stable-diffusion-v1-5”，  
 ---可以尝试不同的数据集,当然,意味着你要多下载几个SPIGA模型;  
----修复没有预下载的模型时,无法加载的错误;  
----fix bug ,The community model is not necessary  
+
 --- You can try different datasets, of course, which means you need to download a few more SPIGA models;  
 ---Fix the error where models that were not downloaded in advance cannot be loaded;
 
@@ -53,16 +53,15 @@ The download address for the model is quite miscellaneous, so please download it
 
 3.1  spiga_300wpublic.pt or other models  [link](https://huggingface.co/aprados/spiga/tree/main)   
 
-3.2  "pytorch_model.bin  & pytorch_model_1.bin  &  pytorch_model_2.bin"   [link](https://drive.google.com/drive/folders/1397t27GrUyLPnj17qVpKWGwg93EcaFfg)
+3.2  pytorch_model.bin  
+     pytorch_model_1.bin  
+     pytorch_model_2.bin   [link](https://drive.google.com/drive/folders/1397t27GrUyLPnj17qVpKWGwg93EcaFfg)
 
 3.3  mobilenet0.25_Final.pth [link](https://drive.google.com/uc?export=download&id=1G3VsfgiQb16VyFnOwEVDgm2g8-9qN0-9)    
      or     
      resnet50.pth    [link](https://www.dropbox.com/s/8sxkgc9voel6ost/resnet50.pth?dl=1)  
-     
-3.4   sd1.5的标准模型只需要以下结构内的文件，你如果直接用内置的repo下载，都会缓存到c盘，大概3.97G。   
-     runwayml/stable-diffusion-v1-5 ,need unet models and vae encoder, You can check the following list, which includes the model and file locations，all 3.97G.     
-    
-3.5  clip模型，这个迟点看能否用comfyUI内置的，以及外置为输入格式,可以引导至本地其他路径。  
+       
+3.4  clip模型，外置为输入格式,可以引导至本地其他路径。  
     "openai/clip-vit-large-patch14" clip models
 
 Models list    
@@ -76,40 +75,16 @@ Models list
 |         ├── pytorch_model_2.bin
 |         ├── spiga_300wpublic.pt
 |         ├── resnet50.pth
+|    ├──checkpoints
+|         ├──   v1-5-pruned-emaonly.safetensors
 ```
-“runwayml/stable-diffusion-v1-5”只需要以下的文件，其他的不用下载，如果用默认的repo下载，会自动缓存到C盘  
-"Runwayml/stable diffusion-v1-5 "only requires the following files, the rest do not need to be downloaded. If downloaded using the default repo, it will be automatically cached on the C drive   
-```
-├── ComfyUI/models/
-|     ├──diffusers
-|         ├── runwayml/stable-diffusion-v1-5
-|             ├──unet
-|                 ├── diffusion_pytorch_model.safetensors
-|                 ├── config.json
-|             ├──vae
-|                 ├── diffusion_pytorch_model.safetensors
-|                 ├── config.json
-|             ├──tokenizer
-|                 ├── merges.txt
-|                 ├── special_tokens_map.json
-|                 ├── tokenizer_config.json
-|                 ├── vocab.json
-|             ├──text_encoder
-|                 ├── model.safetensors
-|                 ├── config.json
-|             ├──scheduler
-|                 ├── scheduler_config.json
-|             ├──safety_checker
-|                 ├── config.json
-|             ├──feature_extractor
-|                 ├── preprocessor_config.json
-|             ├──model_index.json
-```
+首次使用需要下载“runwayml/stable-diffusion-v1-5”的配套config文件，及openai/clip-vit-large-patch14
+
 
 Example
 -----
  
- ![](https://github.com/smthemex/ComfyUI_Stable_Makeup/blob/main/example/example.png)
+ ![](https://github.com/smthemex/ComfyUI_Stable_Makeup/blob/main/example/example1.png)
 
 
 6 Citation
