@@ -25,7 +25,7 @@ My ComfyUI node list：
 
 Update
 ---
----剔除diffuser模型，改成单体的模型 “runwayml/stable-diffusion-v1-5”，  
+---剔除diffuser模型，改成单体的模型 “v1-5-pruned-emaonly.safetensors”，  
 ---可以尝试不同的数据集,当然,意味着你要多下载几个SPIGA模型;  
 
 --- You can try different datasets, of course, which means you need to download a few more SPIGA models;  
@@ -63,6 +63,8 @@ The download address for the model is quite miscellaneous, so please download it
        
 3.4  clip模型，外置为输入格式,可以引导至本地其他路径。  
     "openai/clip-vit-large-patch14" clip models
+
+3.5 SD1.5 “v1-5-pruned-emaonly.safetensors”  [link](https://huggingface.co/runwayml/stable-diffusion-v1-5)
 
 Models list    
 -----
