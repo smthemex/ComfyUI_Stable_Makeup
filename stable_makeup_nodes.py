@@ -19,7 +19,7 @@ from diffusers import (DDIMScheduler, ControlNetModel,
                        DPMSolverSinglestepScheduler,
                        EulerDiscreteScheduler, HeunDiscreteScheduler, KDPM2DiscreteScheduler,
                        EulerAncestralDiscreteScheduler, UniPCMultistepScheduler,
-                       DDPMScheduler, TCDScheduler, LCMScheduler, StableDiffusionPipeline, )
+                       DDPMScheduler, LCMScheduler, StableDiffusionPipeline, )
 from .pipeline_sd15 import StableDiffusionControlNetPipeline
 from .detail_encoder.encoder_plus import detail_encoder
 from .import spiga_draw
