@@ -4,12 +4,22 @@
 import folder_paths
 import os
 import torch
-from diffusers import UNet2DConditionModel as OriginalUNet2DConditionModel
+#from diffusers import UNet2DConditionModel as OriginalUNet2DConditionModel
+import diffusers
+from transformers import CLIPTextModel
+
+dif_version = str(diffusers.__version__)
+dif_version_int = int(dif_version.split(".")[1])
+if dif_version_int >= 28:
+    from diffusers.models.unets.unet_2d_condition import UNet2DConditionModel as OriginalUNet2DConditionModel
+else:
+    from diffusers.models.unet_2d_condition import UNet2DConditionModel as OriginalUNet2DConditionModel
 from diffusers import (DDIMScheduler, ControlNetModel,
-                       KDPM2AncestralDiscreteScheduler, LMSDiscreteScheduler, DPMSolverMultistepScheduler, DPMSolverSinglestepScheduler,
+                       KDPM2AncestralDiscreteScheduler, LMSDiscreteScheduler, DPMSolverMultistepScheduler,
+                       DPMSolverSinglestepScheduler,
                        EulerDiscreteScheduler, HeunDiscreteScheduler, KDPM2DiscreteScheduler,
                        EulerAncestralDiscreteScheduler, UniPCMultistepScheduler,
-                        DDPMScheduler, TCDScheduler, LCMScheduler,)
+                       DDPMScheduler, TCDScheduler, LCMScheduler, StableDiffusionPipeline, )
 from .pipeline_sd15 import StableDiffusionControlNetPipeline
 from .detail_encoder.encoder_plus import detail_encoder
 from .import spiga_draw
@@ -151,8 +161,7 @@ class StableMakeup_LoadModel:
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "diffuser_model": (paths,),
-                "repo":("STRING", {"default": "runwayml/stable-diffusion-v1-5"}),
+                "ckpt_name": (folder_paths.get_filename_list("checkpoints"),),
                 "clip":("STRING", {"default": "openai/clip-vit-large-patch14"}),
                 "scheduler": (scheduler_list,),
             }
@@ -163,15 +172,19 @@ class StableMakeup_LoadModel:
     FUNCTION = "main_loader"
     CATEGORY = "Stable_Makeup"
 
-    def main_loader(self,diffuser_model,repo,clip,scheduler):
+    def main_loader(self,ckpt_name,clip,scheduler):
+        ckpt_path = folder_paths.get_full_path("checkpoints", ckpt_name)
         scheduler_used = get_sheduler(scheduler)
-        model_id=instance_path(diffuser_model,repo)
-        if model_id=="none":
-            raise  "need fill in 'runwayml/stable-diffusion-v1-5' or choice sd1.5 diffuser model"
         makeup_encoder_path = os.path.join(weigths_current_path,"pytorch_model.bin")
         id_encoder_path = os.path.join(weigths_current_path,"pytorch_model_1.bin")
         pose_encoder_path = os.path.join(weigths_current_path,"pytorch_model_2.bin")
-        Unet = OriginalUNet2DConditionModel.from_pretrained(model_id, subfolder="unet", ).to("cuda")
+        original_config_file=os.path.join(folder_paths.models_dir,"configs","v1-inference.yaml")
+        pipe = StableDiffusionPipeline.from_single_file(
+            pretrained_model_link_or_path=ckpt_path, original_config=original_config_file)
+        pipe.to("cuda")
+        Unet= pipe.unet
+        vae=pipe.vae
+        text_encoder = pipe.text_encoder
         id_encoder = ControlNetModel.from_unet(Unet)
         pose_encoder = ControlNetModel.from_unet(Unet)
         makeup_encoder = detail_encoder(Unet, clip, "cuda", dtype=torch.float32)
@@ -185,9 +198,11 @@ class StableMakeup_LoadModel:
         pose_encoder.to("cuda")
         makeup_encoder.to("cuda")
         pipe = StableDiffusionControlNetPipeline.from_pretrained(
-            model_id,
+            "runwayml/stable-diffusion-v1-5",
             safety_checker=None,
             unet=Unet,
+            vae=vae,
+            text_encoder=text_encoder,
             controlnet=[id_encoder, pose_encoder],
             torch_dtype=torch.float32).to("cuda")
         pipe.scheduler = scheduler_used.from_config(pipe.scheduler.config)
