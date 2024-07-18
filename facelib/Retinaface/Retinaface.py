@@ -30,29 +30,27 @@ class FaceDetector:
         if name == 'mobilenet':
             cfg = cfg_mnet
             model = RetinaFace(cfg=cfg, phase='test')
-            if not os.path.exists( weight_path):
+            if not os.path.exists(weight_path):
                 try:
-                    os.makedirs(os.path.split(weight_path)[0], exist_ok=True)
+                    #os.makedirs(os.path.split(weight_path)[0], exist_ok=True)
                     download_weight(
                         link='https://drive.google.com/uc?export=download&id=15zP8BP-5IvWXWZoYTNdvUJUiBqZ1hxu1',
                         file_name=weight_path,
                         verbose=verbose)
-                except MaxRetryError as e:
-                    print("看到这个是因为外网不通,无法下载模型，connect Error ",e)
+                except :
+                    print("看到这个是因为外网不通,无法下载模型，connect Error ")
 
         elif name == 'resnet':
             cfg = cfg_re50
             model = RetinaFace(cfg=cfg, phase='test')
-            if not os.path.exists( weight_path):
+            if not os.path.exists(weight_path):
                 try:
-                    os.makedirs(os.path.split(weight_path)[0], exist_ok=True)
+                    #os.makedirs(os.path.split(weight_path)[0], exist_ok=True)
                     download_weight(link='https://www.dropbox.com/s/8sxkgc9voel6ost/resnet50.pth?dl=1',
                                     file_name=weight_path,
                                     verbose=verbose)
-                except MaxRetryError as e:
-                    print("看到这个是因为外网不通,无法下载模型，connect Error ",e)
-        else:
-            exit('FaceDetector Exit: model name can be either mobilenet or resnet')
+                except :
+                    print("看到这个是因为外网不通,无法下载模型，connect Error ",)
 
              
         # settings for model
