@@ -10,10 +10,7 @@ from transformers import CLIPTextModel
 
 dif_version = str(diffusers.__version__)
 dif_version_int = int(dif_version.split(".")[1])
-if dif_version_int >= 28:
-    from diffusers.models.unets.unet_2d_condition import UNet2DConditionModel as OriginalUNet2DConditionModel
-else:
-    from diffusers.models.unet_2d_condition import UNet2DConditionModel as OriginalUNet2DConditionModel
+
 from diffusers import (DDIMScheduler, ControlNetModel,
                        KDPM2AncestralDiscreteScheduler, LMSDiscreteScheduler, DPMSolverMultistepScheduler,
                        DPMSolverSinglestepScheduler,
