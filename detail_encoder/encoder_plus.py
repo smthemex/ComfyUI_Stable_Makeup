@@ -25,7 +25,7 @@ class detail_encoder(torch.nn.Module):
         self.dtype = dtype
 
         # load image encoder
-        clip_encoder = OriginalCLIPVisionModel.from_pretrained(image_encoder_path)
+        clip_encoder = OriginalCLIPVisionModel.from_pretrained(image_encoder_path,attn_implementation="eager")
         self.image_encoder = CLIPVisionModel(clip_encoder.config)
         state_dict = clip_encoder.state_dict()
         self.image_encoder.load_state_dict(state_dict, strict=False)
@@ -73,7 +73,7 @@ class detail_encoder(torch.nn.Module):
         for pil in pil_image:
             tensor_image = self.clip_image_processor(images=pil, return_tensors="pt").pixel_values.to(self.device, dtype=self.dtype)
             clip_image.append(tensor_image)
-        clip_image = torch.cat(clip_image, dim=0)
+        clip_image = torch.cat(clip_image, dim=0) #torch.Size([1, 3, 224, 224])
 
         # cond
         clip_image_embeds = self.image_encoder(clip_image, output_hidden_states=True)['hidden_states'][2::2]  # 1 257*12 1024
@@ -81,7 +81,7 @@ class detail_encoder(torch.nn.Module):
         uncond_clip_image_embeds = self.image_encoder(torch.zeros_like(clip_image), output_hidden_states=True)['hidden_states'][2::2]
         uncond_clip_image_embeds = torch.cat(uncond_clip_image_embeds, dim=1)
         clip_image_embeds = self.resampler(clip_image_embeds)
-        uncond_clip_image_embeds = self.resampler(uncond_clip_image_embeds)
+        uncond_clip_image_embeds = self.resampler(uncond_clip_image_embeds) #torch.Size([1, 3084, 1024])
         return clip_image_embeds, uncond_clip_image_embeds
 
     def generate(
