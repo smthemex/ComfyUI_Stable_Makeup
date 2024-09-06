@@ -200,7 +200,7 @@ class StableMakeup_LoadModel:
         pose_encoder.to("cuda")
         makeup_encoder.to("cuda")
         pipe = StableDiffusionControlNetPipeline.from_pretrained(
-            "runwayml/stable-diffusion-v1-5",
+            "Lykon/dreamshaper-8",
             safety_checker=None,
             unet=Unet,
             vae=vae,
