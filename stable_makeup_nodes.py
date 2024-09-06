@@ -176,12 +176,13 @@ class StableMakeup_LoadModel:
         id_encoder_path = os.path.join(weigths_current_path,"pytorch_model_1.bin")
         pose_encoder_path = os.path.join(weigths_current_path,"pytorch_model_2.bin")
         original_config_file=os.path.join(folder_paths.models_dir,"configs","v1-inference.yaml")
+        sd15_config="Lykon/dreamshaper-8"
         if dif_version_int >= 28:
              pipe = StableDiffusionPipeline.from_single_file(
-            ckpt_path, original_config=original_config_file)
+            ckpt_path,config=sd15_config, original_config=original_config_file)
         else:
             pipe = StableDiffusionPipeline.from_single_file(
-            ckpt_path, original_config_file=original_config_file)
+            ckpt_path, config=sd15_config,original_config_file=original_config_file)
         pipe.to("cuda")
         Unet= pipe.unet
         vae=pipe.vae
