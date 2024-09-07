@@ -4,10 +4,7 @@
 import folder_paths
 import os
 import torch
-#from diffusers import UNet2DConditionModel as OriginalUNet2DConditionModel
 import diffusers
-from transformers import CLIPTextModel
-
 dif_version = str(diffusers.__version__)
 dif_version_int = int(dif_version.split(".")[1])
 
@@ -24,12 +21,8 @@ from PIL import Image
 from .facelib import FaceDetector
 from comfy.utils import common_upscale
 import numpy as np
-import sys
 
 makeup_current_path = os.path.dirname(os.path.abspath(__file__))
-node_path_dir = os.path.dirname(makeup_current_path)
-comfy_file_path = os.path.dirname(node_path_dir)
-
 weigths_current_path = os.path.join(folder_paths.models_dir, "stable_makeup")
 
 if not os.path.exists(weigths_current_path):
@@ -98,19 +91,6 @@ def get_sheduler(name):
         scheduler = UniPCMultistepScheduler()
     return scheduler
 
-paths = []
-for search_path in folder_paths.get_folder_paths("diffusers"):
-    if os.path.exists(search_path):
-        for root, subdir, files in os.walk(search_path, followlinks=True):
-            if "model_index.json" in files:
-                paths.append(os.path.relpath(root, start=search_path))
-
-if paths:
-    paths = ["none"] + [x for x in paths if x]
-else:
-    paths = ["none", ]
-
-
 def tensor_to_pil(tensor):
     image_np = tensor.squeeze().mul(255).clamp(0, 255).byte().numpy()
     image = Image.fromarray(image_np, mode='RGB')
@@ -126,28 +106,6 @@ def nomarl_upscale(img_tensor, width, height):
     samples = img.movedim(1, -1)
     img_pil = tensor_to_pil(samples)
     return img_pil
-
-def get_local_path(comfy_file_path, model_path):
-    path = os.path.join(comfy_file_path, "models", "diffusers", model_path)
-    model_path = os.path.normpath(path)
-    if sys.platform == 'win32':
-        model_path = model_path.replace('\\', "/")
-    return model_path
-
-def get_instance_path(path):
-    instance_path = os.path.normpath(path)
-    if sys.platform == 'win32':
-        instance_path = instance_path.replace('\\', "/")
-    return instance_path
-
-def instance_path(path, repo):
-    if repo == "":
-        if path == "none":
-            repo = "none"
-        else:
-            model_path = get_local_path(comfy_file_path, path)
-            repo = get_instance_path(model_path)
-    return repo
 
 
 class StableMakeup_LoadModel:
@@ -176,7 +134,7 @@ class StableMakeup_LoadModel:
         id_encoder_path = os.path.join(weigths_current_path,"pytorch_model_1.bin")
         pose_encoder_path = os.path.join(weigths_current_path,"pytorch_model_2.bin")
         original_config_file=os.path.join(folder_paths.models_dir,"configs","v1-inference.yaml")
-        sd15_config="Lykon/dreamshaper-8"
+        sd15_config=os.path.join(makeup_current_path,"sd15_config")
         if dif_version_int >= 28:
              pipe = StableDiffusionPipeline.from_single_file(
             ckpt_path,config=sd15_config, original_config=original_config_file)
@@ -200,7 +158,7 @@ class StableMakeup_LoadModel:
         pose_encoder.to("cuda")
         makeup_encoder.to("cuda")
         pipe = StableDiffusionControlNetPipeline.from_pretrained(
-            "Lykon/dreamshaper-8",
+            sd15_config,
             safety_checker=None,
             unet=Unet,
             vae=vae,

@@ -25,11 +25,16 @@ git clone https://github.com/smthemex/ComfyUI_Stable_Makeup.git
   
 2.requirements  
 ----
-按理是不需要装特别的库，因为内置了，如果还是库丢失，请单独安装。或者打开no need requirements.txt，查看缺失的库是否在里面。  
-秋叶包因为是沙箱模式，所以把缺失的库安装在系统的python库里。   
-官方的整合包，用pip install AAA --target="BBB/python_embeded/Lib/site-packages" AAA替换为缺失的库，BBB是本地路径。   
+only insightface in requirements.txt   
 
-If the module is missing, please open "no need requirements.txt" , pip install  missing module.    
+```
+pip install -r requirements.txt
+```  
+按理是不需要装特别的库，因为内置了，如果还是库丢失，请单独安装.
+便携包和秋叶包请注意使用python -m pip install 
+
+If the module is missing, please open "no need requirements.txt" , pip install or python -m pip install 
+  missing module.    
 
 3 Need  model 
 ----
@@ -49,7 +54,8 @@ The download address for the model is quite miscellaneous, so please download it
 3.4  clip模型，外置为输入格式,可以引导至本地其他路径。  
     "openai/clip-vit-large-patch14" clip models
 
-3.5 SD1.5 “v1-5-pruned-emaonly.safetensors”  [link](https://huggingface.co/runwayml/stable-diffusion-v1-5)
+3.5 SD1.5  
+     any sd1.5 weights,   
 
 Models list    
 -----
@@ -62,10 +68,10 @@ Models list
 |         ├── pytorch_model_2.bin
 |         ├── spiga_300wpublic.pt
 |         ├── resnet50.pth
-|    ├──checkpoints
-|         ├──   v1-5-pruned-emaonly.safetensors
+├── ComfyUI/models/checkpoints
+|         ├──  any sd1.5 weights,
 ```
-首次使用需要下载“runwayml/stable-diffusion-v1-5”的配套config文件，及openai/clip-vit-large-patch14
+首次使用需要下载openai/clip-vit-large-patch14
 
 
 Example
