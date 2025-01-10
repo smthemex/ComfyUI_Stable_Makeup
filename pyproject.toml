@@ -1,7 +1,7 @@
 [project]
 name = "comfyui_stable_makeup"
-description = "you can using stable makeup in comfyUI"
-version = "1.0.1"
+description = "you can using stable makeup when use comfyUI"
+version = "1.0.2"
 license = { file = "LICENSE" }
 
 [project.urls]
