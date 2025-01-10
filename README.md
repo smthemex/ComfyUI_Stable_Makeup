@@ -1,20 +1,15 @@
 # ComfyUI_Stable_Makeup
-You can apply makeup to the characters in comfyui
+You can apply makeup to the characters when use ComfyUI
 
 Stable_Makeup  From: [Stable_Makeup](https://github.com/Xiaojiu-z/Stable-Makeup)
 
 Update
 ---
-**2024/09/06**
+**2025/01/10**
 
-* fix runway error/修复runway库不存在导致的错误；  
+* add lora support,you can try 4 step lora or other； 
+* 增加加速Lora或者常规Lora的支持； 
 
-**Previous updates**  
-*剔除diffuser模型，改成单体的模型 “v1-5-pruned-emaonly.safetensors”，  
-*可以尝试不同的数据集,当然,意味着你要多下载几个SPIGA模型;  
-
---- You can try different datasets, of course, which means you need to download a few more SPIGA models;  
----Fix the error where models that were not downloaded in advance cannot be loaded;
 
 1.Installation
 -----
@@ -77,7 +72,7 @@ Models list
 Example
 -----
  
- ![](https://github.com/smthemex/ComfyUI_Stable_Makeup/blob/main/example/example1.png)
+ ![](https://github.com/smthemex/ComfyUI_Stable_Makeup/blob/main/example.png)
 
 
 6 Citation
