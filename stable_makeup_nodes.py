@@ -117,7 +117,7 @@ class StableMakeup_LoadModel:
             "required": {
                 "ckpt_name": (folder_paths.get_filename_list("checkpoints"),),
                 "clip":("STRING", {"default": "openai/clip-vit-large-patch14"}),
-                "lora":("none"+folder_paths.get_filename_list("loras"),),
+                "lora":(["none"]+folder_paths.get_filename_list("loras"),),
                 "lora_scale": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 1.0, "step": 0.1, "round": 0.01}),
                 "lora_trigger_words":("STRING", {"default": "best"}),
                 "scheduler": (scheduler_list,),
