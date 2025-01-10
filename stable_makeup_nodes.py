@@ -24,7 +24,6 @@ import numpy as np
 
 makeup_current_path = os.path.dirname(os.path.abspath(__file__))
 weigths_current_path = os.path.join(folder_paths.models_dir, "stable_makeup")
-
 if not os.path.exists(weigths_current_path):
     os.makedirs(weigths_current_path)
 
@@ -118,16 +117,19 @@ class StableMakeup_LoadModel:
             "required": {
                 "ckpt_name": (folder_paths.get_filename_list("checkpoints"),),
                 "clip":("STRING", {"default": "openai/clip-vit-large-patch14"}),
+                "lora":("none"+folder_paths.get_filename_list("loras"),),
+                "lora_scale": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 1.0, "step": 0.1, "round": 0.01}),
+                "lora_trigger_words":("STRING", {"default": "best"}),
                 "scheduler": (scheduler_list,),
             }
         }
 
-    RETURN_TYPES = ("MODEL","MODEL",)
-    RETURN_NAMES = ("model","makeup_encoder",)
+    RETURN_TYPES = ("MAKEUP_MODEL",)
+    RETURN_NAMES = ("model",)
     FUNCTION = "main_loader"
     CATEGORY = "Stable_Makeup"
 
-    def main_loader(self,ckpt_name,clip,scheduler):
+    def main_loader(self,ckpt_name,clip,lora,lora_scale,lora_trigger_words,scheduler):
         ckpt_path = folder_paths.get_full_path("checkpoints", ckpt_name)
         scheduler_used = get_sheduler(scheduler)
         makeup_encoder_path = os.path.join(weigths_current_path,"pytorch_model.bin")
@@ -150,13 +152,22 @@ class StableMakeup_LoadModel:
         makeup_encoder = detail_encoder(Unet, clip, "cuda", dtype=torch.float32)
         makeup_state_dict = torch.load(makeup_encoder_path)
         id_state_dict = torch.load(id_encoder_path)
+        
         id_encoder.load_state_dict(id_state_dict, strict=False)
         pose_state_dict = torch.load(pose_encoder_path)
         pose_encoder.load_state_dict(pose_state_dict, strict=False)
         makeup_encoder.load_state_dict(makeup_state_dict, strict=False)
+        
+        del id_state_dict,makeup_state_dict,pose_state_dict
+        torch.cuda.empty_cache()
+        
         id_encoder.to("cuda")
         pose_encoder.to("cuda")
         makeup_encoder.to("cuda")
+        if lora!="none":
+            lora_path = folder_paths.get_full_path("loras", lora)
+            pipe.load_lora_weights(lora_path, adapter_name=lora_trigger_words)
+            pipe.fuse_lora(adapter_names=[lora_trigger_words, ], lora_scale=lora_scale)
         pipe = StableDiffusionControlNetPipeline.from_pretrained(
             sd15_config,
             safety_checker=None,
@@ -166,7 +177,8 @@ class StableMakeup_LoadModel:
             controlnet=[id_encoder, pose_encoder],
             torch_dtype=torch.float32).to("cuda")
         pipe.scheduler = scheduler_used.from_config(pipe.scheduler.config)
-        return (pipe,makeup_encoder)
+        
+        return ({"pipe":pipe,"makeup_encoder":makeup_encoder},)
 
 class StableMakeup_Sampler:
     @classmethod
@@ -175,8 +187,7 @@ class StableMakeup_Sampler:
             "required": {
                 "id_image": ("IMAGE",),
                 "makeup_image": ("IMAGE",),
-                "pipe": ("MODEL",),
-                "makeup_encoder": ("MODEL",),
+                "model": ("MAKEUP_MODEL",),
                 "facedetector": (["mobilenet","resnet"],),
                 "dataname": (["300wpublic", "300wprivate","merlrav","wflw"],),
                 "cfg": ("FLOAT", {"default": 1.6, "min": 0.0, "max": 30.0, "step": 0.1, "round": 0.01}),
@@ -193,9 +204,10 @@ class StableMakeup_Sampler:
     CATEGORY = "Stable_Makeup"
     
     
-    def makeup_main(self, id_image, makeup_image, pipe, makeup_encoder,facedetector,dataname,cfg, steps,
-                      width, height ):
+    def makeup_main(self, id_image, makeup_image, model,facedetector,dataname,cfg, steps,width, height ):
         
+        pipe=model.get("pipe")
+        makeup_encoder=model.get("makeup_encoder")
         if facedetector=="mobilenet":
             weight_path=os.path.join(weigths_current_path, "mobilenet0.25_Final.pth")
         else:
@@ -226,8 +238,9 @@ class StableMakeup_Sampler:
 NODE_CLASS_MAPPINGS = {
     "StableMakeup_LoadModel":StableMakeup_LoadModel,
     "StableMakeup_Sampler": StableMakeup_Sampler
+
 }
 NODE_DISPLAY_NAME_MAPPINGS = {
     "StableMakeup_LoadModel":"StableMakeup_LoadModel",
-    "StableMakeup_Sampler": "StableMakeup_Sampler",
+    "StableMakeup_Sampler": "StableMakeup_Sampler"
 }
