@@ -1,0 +1,243 @@
+{
+  "last_node_id": 27,
+  "last_link_id": 23,
+  "nodes": [
+    {
+      "id": 25,
+      "type": "LoadImage",
+      "pos": [
+        3262.166015625,
+        -422.4749450683594
+      ],
+      "size": [
+        315,
+        314
+      ],
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            21
+          ]
+        },
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": null
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "LoadImage"
+      },
+      "widgets_values": [
+        "image (5).png",
+        "image"
+      ]
+    },
+    {
+      "id": 26,
+      "type": "LoadImage",
+      "pos": [
+        3262.980712890625,
+        -47.3636360168457
+      ],
+      "size": [
+        315,
+        314
+      ],
+      "flags": {},
+      "order": 1,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            22
+          ]
+        },
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": null
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "LoadImage"
+      },
+      "widgets_values": [
+        "image (4).png",
+        "image"
+      ]
+    },
+    {
+      "id": 24,
+      "type": "StableMakeup_Sampler",
+      "pos": [
+        4050.78369140625,
+        -324.9612731933594
+      ],
+      "size": [
+        315,
+        218
+      ],
+      "flags": {},
+      "order": 3,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "id_image",
+          "type": "IMAGE",
+          "link": 21
+        },
+        {
+          "name": "makeup_image",
+          "type": "IMAGE",
+          "link": 22
+        },
+        {
+          "name": "model",
+          "type": "MAKEUP_MODEL",
+          "link": 20
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "links": [
+            23
+          ],
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "StableMakeup_Sampler"
+      },
+      "widgets_values": [
+        "mobilenet",
+        "300wpublic",
+        1.6,
+        30,
+        512,
+        512
+      ]
+    },
+    {
+      "id": 23,
+      "type": "StableMakeup_LoadModel",
+      "pos": [
+        3715.61572265625,
+        -44.112037658691406
+      ],
+      "size": [
+        315,
+        178
+      ],
+      "flags": {},
+      "order": 2,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "model",
+          "type": "MAKEUP_MODEL",
+          "links": [
+            20
+          ],
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "StableMakeup_LoadModel"
+      },
+      "widgets_values": [
+        "DreamShaper_8_pruned_sdm.safetensors",
+        "clip_l.safetensors",
+        "none",
+        1,
+        "best",
+        "DDIM"
+      ]
+    },
+    {
+      "id": 27,
+      "type": "SaveImage",
+      "pos": [
+        4427.05908203125,
+        -141.79298400878906
+      ],
+      "size": [
+        351.89019775390625,
+        323.609375
+      ],
+      "flags": {},
+      "order": 4,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 23
+        }
+      ],
+      "outputs": [],
+      "properties": {},
+      "widgets_values": [
+        "ComfyUI"
+      ]
+    }
+  ],
+  "links": [
+    [
+      20,
+      23,
+      0,
+      24,
+      2,
+      "MAKEUP_MODEL"
+    ],
+    [
+      21,
+      25,
+      0,
+      24,
+      0,
+      "IMAGE"
+    ],
+    [
+      22,
+      26,
+      0,
+      24,
+      1,
+      "IMAGE"
+    ],
+    [
+      23,
+      24,
+      0,
+      27,
+      0,
+      "IMAGE"
+    ]
+  ],
+  "groups": [],
+  "config": {},
+  "extra": {
+    "ds": {
+      "scale": 0.8823625851991465,
+      "offset": [
+        -2996.035481770833,
+        610.8469687042686
+      ]
+    }
+  },
+  "version": 0.4
+}
