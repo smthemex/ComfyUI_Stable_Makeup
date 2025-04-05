@@ -5,10 +5,10 @@ Stable_Makeup  From: [Stable_Makeup](https://github.com/Xiaojiu-z/Stable-Makeup)
 
 Update
 ---
-**2025/01/10**
-
-* add lora support,you can try 4 step lora or other； 
-* 增加加速Lora或者常规Lora的支持； 
+**2025/04/5**
+* use single clip ,改成单体clip，似乎质量并未下降；
+* add lora support,you can try 4 step lora or other，增加加速Lora或者常规Lora的支持； ； 
+  
 
 
 1.Installation
@@ -45,12 +45,7 @@ The download address for the model is quite miscellaneous, so please download it
 3.3  mobilenet0.25_Final.pth [link](https://drive.google.com/uc?export=download&id=1G3VsfgiQb16VyFnOwEVDgm2g8-9qN0-9)    
      or     
      resnet50.pth    [link](https://www.dropbox.com/s/8sxkgc9voel6ost/resnet50.pth?dl=1)  
-       
-3.4  clip模型，外置为输入格式,可以引导至本地其他路径。  
-    "openai/clip-vit-large-patch14" clip models
-
-3.5 SD1.5  
-     any sd1.5 weights,   
+     
 
 Models list    
 -----
@@ -65,6 +60,8 @@ Models list
 |         ├── resnet50.pth
 ├── ComfyUI/models/checkpoints
 |         ├──  any sd1.5 weights,
+├── ComfyUI/models/clip
+|         ├──  clip_l.safetensors
 ```
 首次使用需要下载openai/clip-vit-large-patch14
 
@@ -72,7 +69,7 @@ Models list
 Example
 -----
  
- ![](https://github.com/smthemex/ComfyUI_Stable_Makeup/blob/main/example.png)
+ ![](https://github.com/smthemex/ComfyUI_Stable_Makeup/blob/main/example_.png)
 
 
 6 Citation
