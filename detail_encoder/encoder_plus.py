@@ -1,13 +1,12 @@
-from typing import List
+
 import torch
-from torchvision import transforms
-from transformers import CLIPImageProcessor
+from transformers import CLIPImageProcessor,CLIPVisionConfig
 from transformers import CLIPVisionModel as OriginalCLIPVisionModel
 from ._clip import CLIPVisionModel
 from PIL import Image
 import torch.nn.functional as F
-import torch.nn as nn
-import os
+
+from safetensors.torch import load_file
 
 def is_torch2_available():
     return hasattr(F, "scaled_dot_product_attention")
@@ -19,18 +18,21 @@ from .resampler import Resampler
 
 class detail_encoder(torch.nn.Module):
     """from SSR-encoder"""
-    def __init__(self, unet, image_encoder_path, device="cuda", dtype=torch.float32):
+    def __init__(self, unet, image_encoder_path,repo, device="cuda", dtype=torch.float32):
         super().__init__()
         self.device = device
         self.dtype = dtype
 
         # load image encoder
-        clip_encoder = OriginalCLIPVisionModel.from_pretrained(image_encoder_path,attn_implementation="eager")
+        text_encoder_config = CLIPVisionConfig.from_pretrained(repo,attn_implementation="eager",local_files_only=True)
+        clip_encoder=OriginalCLIPVisionModel(text_encoder_config)
+        text_encoder_sd = load_file(image_encoder_path)
+        clip_encoder.load_state_dict(text_encoder_sd, strict=False)
         self.image_encoder = CLIPVisionModel(clip_encoder.config)
         state_dict = clip_encoder.state_dict()
         self.image_encoder.load_state_dict(state_dict, strict=False)
         self.image_encoder.to(self.device, self.dtype)
-        del clip_encoder
+        del clip_encoder,text_encoder_sd
         self.clip_image_processor = CLIPImageProcessor()
 
         # load SSR layers
@@ -111,3 +113,4 @@ class detail_encoder(torch.nn.Module):
         ).images[0]
 
         return image
+
