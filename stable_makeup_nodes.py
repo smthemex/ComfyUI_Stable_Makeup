@@ -4,9 +4,7 @@
 import folder_paths
 import os
 import torch
-import diffusers
-dif_version = str(diffusers.__version__)
-dif_version_int = int(dif_version.split(".")[1])
+
 
 from diffusers import (DDIMScheduler, ControlNetModel,
                        KDPM2AncestralDiscreteScheduler, LMSDiscreteScheduler, DPMSolverMultistepScheduler,
@@ -116,7 +114,7 @@ class StableMakeup_LoadModel:
         return {
             "required": {
                 "ckpt_name": (folder_paths.get_filename_list("checkpoints"),),
-                "clip":("STRING", {"default": "openai/clip-vit-large-patch14"}),
+                "clip":(folder_paths.get_filename_list("clip"),),
                 "lora":(["none"]+folder_paths.get_filename_list("loras"),),
                 "lora_scale": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 1.0, "step": 0.1, "round": 0.01}),
                 "lora_trigger_words":("STRING", {"default": "best"}),
@@ -130,6 +128,7 @@ class StableMakeup_LoadModel:
     CATEGORY = "Stable_Makeup"
 
     def main_loader(self,ckpt_name,clip,lora,lora_scale,lora_trigger_words,scheduler):
+        clip=folder_paths.get_full_path("clip", clip)
         ckpt_path = folder_paths.get_full_path("checkpoints", ckpt_name)
         scheduler_used = get_sheduler(scheduler)
         makeup_encoder_path = os.path.join(weigths_current_path,"pytorch_model.bin")
@@ -137,10 +136,10 @@ class StableMakeup_LoadModel:
         pose_encoder_path = os.path.join(weigths_current_path,"pytorch_model_2.bin")
         original_config_file=os.path.join(folder_paths.models_dir,"configs","v1-inference.yaml")
         sd15_config=os.path.join(makeup_current_path,"sd15_config")
-        if dif_version_int >= 28:
+        try:
              pipe = StableDiffusionPipeline.from_single_file(
             ckpt_path,config=sd15_config, original_config=original_config_file)
-        else:
+        except:
             pipe = StableDiffusionPipeline.from_single_file(
             ckpt_path, config=sd15_config,original_config_file=original_config_file)
         pipe.to("cuda")
@@ -149,7 +148,8 @@ class StableMakeup_LoadModel:
         text_encoder = pipe.text_encoder
         id_encoder = ControlNetModel.from_unet(Unet)
         pose_encoder = ControlNetModel.from_unet(Unet)
-        makeup_encoder = detail_encoder(Unet, clip, "cuda", dtype=torch.float32)
+        repo=os.path.join(makeup_current_path,"clip")
+        makeup_encoder = detail_encoder(Unet, clip,repo, "cuda", dtype=torch.float32)
         makeup_state_dict = torch.load(makeup_encoder_path)
         id_state_dict = torch.load(id_encoder_path)
         
