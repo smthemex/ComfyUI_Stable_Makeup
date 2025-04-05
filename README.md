@@ -33,25 +33,11 @@ If the module is missing, please open "no need requirements.txt" , pip install o
 
 3 Need  model 
 ----
-模型的下载地址比较杂，所以使用前请下下载，并存放在ComfyUI/models/stable_makeup 文件夹下：   
-The download address for the model is quite miscellaneous, so please download it before use and store it in the ComfyUI/models/table_makeup folder:  
-
-3.1  spiga_300wpublic.pt or other models  [link](https://huggingface.co/aprados/spiga/tree/main)   
-
-3.2  pytorch_model.bin  
-     pytorch_model_1.bin  
-     pytorch_model_2.bin   [link](https://drive.google.com/drive/folders/1397t27GrUyLPnj17qVpKWGwg93EcaFfg)
-
-3.3  mobilenet0.25_Final.pth [link](https://drive.google.com/uc?export=download&id=1G3VsfgiQb16VyFnOwEVDgm2g8-9qN0-9)    
-     or     
-     resnet50.pth    [link](https://www.dropbox.com/s/8sxkgc9voel6ost/resnet50.pth?dl=1)  
+* 模型的下载地址比较杂，所以使用前请下下载，并存放在ComfyUI/models/stable_makeup 文件夹下,The download address for the model is quite miscellaneous, so please download it before use and store it in the ComfyUI/models/table_makeup folder:  
+* download [spiga_300wpublic.pt](https://huggingface.co/aprados/spiga/tree/main)  and  [(pytorch_model.bin  , pytorch_model_1.bin  , pytorch_model_2.bin) ](https://drive.google.com/drive/folders/1397t27GrUyLPnj17qVpKWGwg93EcaFfg)  and    [mobilenet0.25_Final.pth](https://drive.google.com/uc?export=download&id=1G3VsfgiQb16VyFnOwEVDgm2g8-9qN0-9)    or      [resnet50.pth](https://www.dropbox.com/s/8sxkgc9voel6ost/resnet50.pth?dl=1)  
      
-
-Models list    
------
 ```
-├── ComfyUI/models/  
-|     ├──stable_makeup
+├── ComfyUI/models/stable_makeup/
 |         ├── mobilenet0.25_Final.pth
 |         ├── pytorch_model.bin
 |         ├── pytorch_model_1.bin
@@ -63,8 +49,6 @@ Models list
 ├── ComfyUI/models/clip
 |         ├──  clip_l.safetensors
 ```
-首次使用需要下载openai/clip-vit-large-patch14
-
 
 Example
 -----
