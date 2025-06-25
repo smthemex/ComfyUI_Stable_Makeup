@@ -134,7 +134,7 @@ class StableMakeup_LoadModel:
         makeup_encoder_path = os.path.join(weigths_current_path,"pytorch_model.bin")
         id_encoder_path = os.path.join(weigths_current_path,"pytorch_model_1.bin")
         pose_encoder_path = os.path.join(weigths_current_path,"pytorch_model_2.bin")
-        original_config_file=os.path.join(folder_paths.models_dir,"configs","v1-inference.yaml")
+        original_config_file=os.path.join(makeup_current_path,"datasets/v1-inference.yaml")
         sd15_config=os.path.join(makeup_current_path,"sd15_config")
         try:
              pipe = StableDiffusionPipeline.from_single_file(
