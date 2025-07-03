@@ -39,8 +39,10 @@ from diffusers.utils.torch_utils import is_compiled_module, is_torch_version, ra
 from diffusers.pipelines.pipeline_utils import DiffusionPipeline
 from diffusers.pipelines.stable_diffusion.pipeline_output import StableDiffusionPipelineOutput
 from diffusers.pipelines.stable_diffusion.safety_checker import StableDiffusionSafetyChecker
-from diffusers.pipelines.controlnet.multicontrolnet import MultiControlNetModel
-
+try:
+    from diffusers.pipelines.controlnet.multicontrolnet import MultiControlNetModel
+except :
+    from diffusers.models.controlnets.multicontrolnet import MultiControlNetModel
 logger = logging.get_logger(__name__)  # pylint: disable=invalid-name
 
 
